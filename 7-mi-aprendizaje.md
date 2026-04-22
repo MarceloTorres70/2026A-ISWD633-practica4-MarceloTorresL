@@ -1,3 +1,16 @@
-# COMPLETAR  
-Comparando sus conocimientos antes de hacer la práctica con sus conocimientos después de hacer la tarea, explicar los principales aprendizajes logrados para beneficio de su formación profesional.  
-Si solucionó un problema presentado al realizar la práctica también se debe documentar.
+Al iniciar esta práctica, mi conocimiento se limitaba a la preparación y despliegue de contenedores utilizando imágenes preexistentes creadas por terceros. Tras completar estos ejercicios, entiendo el proceso de creación de imágenes personalizadas, la gestión de recursos físicos y la configuración de resiliencia automatizada. Estos conocimientos son clave para estructurar una arquitectura de despliegue robusta, estandarizada y segura en otros proyectos.
+
+## Principales Aprendizajes Técnicos
+
+* **Construcción de Imágenes y Caché:** Comprendí cómo traducir pasos manuales de configuración en código inmutable a través de instrucciones como `RUN`, `COPY` y `CMD`. El descubrimiento más valioso fue el uso del mecanismo de caché por capas de Docker, lo cual me permitirá optimizar drásticamente los tiempos de compilación al estructurar correctamente los Dockerfiles de mis proyectos.
+* **Resiliencia Automática:** Experimentar con políticas como `on-failure` y `always` a través de scripts que simulan caídas (`exit 1`) me demostró cómo Docker puede actuar como un sistema de auto-recuperación. Esto garantiza alta disponibilidad de los servicios sin necesidad de intervención manual constante.
+* **Auditoría:** Aprender a fijar cuotas estrictas de CPU y RAM (`--cpus`, `--memory`) y a establecer `Healthchecks` internos asegura que un contenedor malicioso o con fugas de memoria no comprometa la estabilidad del servidor ni de los demás microservicios de la red.
+
+## Resolución de Problemas
+
+Durante el desarrollo de esta práctica, resolví un problema de infraestructura heredada que impedía la construcción de la imagen base:
+
+1. **CentOS 7 EOL:** Al ejecutar el comando `docker build` para crear la imagen del servidor Apache, el proceso falló en la instrucción `RUN yum -y update` lanzando un error de resolución DNS (`Could not resolve host: mirrorlist.centos.org`). 
+2. **Causa:** Identifiqué que no era un problema de red local ni de Docker, sino un problema global: el sistema operativo CentOS 7 llegó a su fin de vida útil y sus servidores de repositorios principales fueron dados de baja definitivamente de internet.
+3. **Solución:** Para cumplir con el requerimiento de usar la imagen base estipulada (`centos:7`) sin alterar las dependencias, implementé una solución a nivel de línea de comandos en el `Dockerfile`. Utilicé la herramienta `sed` para inyectar una regla antes de la actualización que reemplaza las URLs rotas por las rutas históricas de respaldo (`vault.centos.org`):
+   `RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*`. Esta intervención estabilizó el flujo de construcción inmediatamente y permitió completar el despliegue del servidor web con éxito. Adicionalmente, reforcé la importancia del contexto de construcción, con el `.` en el comando build, para evitar errores de rutas de archivos.
