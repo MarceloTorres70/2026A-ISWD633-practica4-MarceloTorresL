@@ -53,17 +53,18 @@ docker build -t <nombre imagen>:<tag> .
 ### Ejecutar el archivo Dockerfile y construir una imagen en la versión 1.0
 No olvides verificar en qué directorio se encuentra el archivo Dockerfile
 ```
-
+docker build -t mi-apache:1.0 .
 ```
 
 **¿Cuántos pasos se han ejecutado?**
-# RESPONDER 
+**Respuesta:** El motor de Docker reportó la ejecución de 5 capas principales de construcción (y 10 pasos internos en total), correspondientes a las instrucciones del Dockerfile (incluyendo la instrucción extra para corregir los repositorios obsoletos de CentOS 7, más las instalaciones y copias de archivos).
 
 ### Inspeccionar la imagen creada
-# COMPLETAR CON UNA CAPTURA
+![Inspeccionar Imagen](img/5-inspect.png)
 
 **Modificar el archivo index.html para incluir su nombre y luego crear una nueva versión de la imagen anterior**
 **¿Cuántos pasos se han ejecutado? ¿Observa algo diferente en la creación de la imagen**
+**Respuesta:** Se ejecutó la misma cantidad de pasos, pero el proceso duró un par de segundos. Se observa la etiqueta "CACHED" en las primeras capas (desde el FROM hasta la instalación de Apache), ya que Docker reutilizó la memoria caché al detectar que no había cambios estructurales. Solo se procesó realmente la capa de la instrucción COPY debido a la modificación del archivo web.
 
 ## Mecanismo de caché
 Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso de construcción y evitar la repetición de pasos que no han cambiado. Cada instrucción en un Dockerfile crea una capa en la imagen final. Docker intenta reutilizar las capas de una construcción anterior si no han cambiado, lo que reduce significativamente el tiempo de construcción.
@@ -75,14 +76,14 @@ Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso
 
 ### Crear un contenedor a partir de las imagen creada, mapear todos los puertos
 ```
-
+docker run -d --name mi-servidor -P mi-apache:2.0
 ```
 
 ### ¿Con que puerto host se está realizando el mapeo?
-# COMPLETAR CON LA RESPUESTA
+**Respuesta:** Al usar la bandera -P, Docker mapeó el puerto 80 del contenedor a un puerto efímero aleatorio en el host (por ejemplo, el puerto XXXXX). (Nota para Copilot: Deja las XXXXX tal cual, yo lo cambiaré manualmente luego).
 
 **¿Qué es una imagen huérfana?**
-# COMPLETAR CON LA RESPUESTA
+**Respuesta:** Una imagen huérfana (dangling image) es una imagen que ya no tiene una etiqueta (tag) asignada y no está asociada a ningún contenedor activo. Suelen generarse al construir una nueva imagen sobrescribiendo un nombre y tag que ya existían.
 
 ### Identificar imágenes huérfanas
 ```
