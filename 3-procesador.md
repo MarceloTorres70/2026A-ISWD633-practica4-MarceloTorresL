@@ -10,7 +10,10 @@ Asignar núcleos de CPU específicos:
 ```
 
 **¿Como saber el numero de procesadores virtuales que tiene una máquina?**
-## COMPLETAR
+Para averiguar la cantidad de procesadores lógicos (núcleos virtuales) de tu equipo, puedes utilizar la terminal dependiendo de tu sistema operativo:
+
+* **En Linux o WSL (Entorno nativo de Docker):** Ejecuta el comando `nproc`. También puedes usar `lscpu` para obtener un detalle completo de la arquitectura del procesador.
+* **En Windows (Git Bash):** Ejecuta el comando `echo $NUMBER_OF_PROCESSORS` o `wmic cpu get NumberOfLogicalProcessors`.
 
 ## Ejemplos
 _Puedes copiar y ejecutar directamente cada uno de los comandos_
